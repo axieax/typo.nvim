@@ -58,8 +58,12 @@ end
 
 function M.get_possible_files(path)
   print("hi", path, vim.bo.filetype)
-  -- NOTE: extra glob pattern character "?" excludes original path from matches
-  return vim.fn.glob(path .. "?*", 0, 1)
+  -- escape %, ? and [ characters
+  local escaped_path = string.gsub(path, "[%?%*%[]", function(char)
+    return "\\" .. char
+  end)
+  -- extra glob pattern character "?" excludes original path from matches
+  return vim.fn.glob(escaped_path .. "?*", 0, 1)
 end
 
 -- TEMP: match glob pattern directly (like autocmd-event)

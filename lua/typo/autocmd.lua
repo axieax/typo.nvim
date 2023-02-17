@@ -47,7 +47,7 @@ function M.setup_autocmd()
 
             require("typo").check(opts.buf, opts.match, true)
           else
-            utils.log("Buffer is no longer valid", vim.log.levels.WARN)
+            utils.log("Buffer is no longer valid", vim.log.levels.DEBUG)
           end
         end)
       end,

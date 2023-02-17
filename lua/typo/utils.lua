@@ -12,4 +12,16 @@ function M.log(message, level)
   end
 end
 
+--- Checks whether @path refers to a file that exists on the filesystem
+---@param path string @path to check
+---@return boolean
+function M.is_existent_file(path)
+  local stat = vim.loop.fs_stat(path)
+  return stat and stat.type == "file"
+end
+
+function M.cast_relative_path(absolute_path)
+  return vim.fn.fnamemodify(absolute_path, ":p:.")
+end
+
 return M

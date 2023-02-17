@@ -9,6 +9,7 @@ local default_config = {
     enabled = true,
     pattern = "*",
     ignored_filetypes = { "TelescopePrompt", "neo-tree" },
+    auto_select = false,
 
     check_dir = true, -- dir `foo` opened but `foo.lua` exists
     check_empty_file = true, -- non-existent file `foo` opened but `foo.bar` exists

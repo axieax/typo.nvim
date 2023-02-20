@@ -4,32 +4,26 @@ local config = require("typo.config")
 local config_helpers = require("typo.config.helpers")
 local utils = require("typo.utils")
 
+--- Get possible file typo suggestions beginning with @path
+---@param path string @path to check
+---@return string[] @possible suggestions filtered to exclude ignored patterns
 function M.get_possible_files(path)
   utils.log(string.format("Finding suggestions for %s (ft: %s)", path, vim.bo.filetype), vim.log.levels.TRACE)
   -- escape %, ? and [ characters
   local escaped_path = string.gsub(path, "[%?%*%[]", function(char)
     return "\\" .. char
   end)
+
   -- extra glob pattern character "?" excludes original path from matches
-  return vim.fn.glob(escaped_path .. "?*", 0, 1)
-end
-
--- TEMP: match glob pattern directly (like autocmd-event)
-local function glob_match(path, pattern)
-  pattern = vim.fn.glob2regpat(pattern)
-  pattern = pattern:gsub("^%^", ""):gsub("%$$", "")
-  local regex = vim.regex(pattern)
-  return regex and regex:match_str(path) ~= nil
-end
-
---- Open @filename and replace @typo_bufnr if configured to
----@param filename string @file to open
----@param typo_bufnr number @bufnr of original buffer to delete
-local function edit_file(filename, typo_bufnr)
-  vim.api.nvim_cmd({ cmd = "edit", args = { filename } }, {})
-  if config.replace_buffer then
-    vim.api.nvim_buf_delete(typo_bufnr, {})
-  end
+  local possible = vim.fn.glob(escaped_path .. "?*", 0, 1)
+  return vim.tbl_filter(function(path)
+    for _, pattern in ipairs(config.ignored_patterns) do
+      if utils.glob_match(path, pattern) then
+        return false
+      end
+    end
+    return true
+  end, possible)
 end
 
 --- Find suggestions if there is a typo detected for @current_path
@@ -42,14 +36,6 @@ function M.check(bufnr, current_path, from_autocmd)
   utils.log(string.format("Checking bufnr: %s, current_path: %s", bufnr, current_path), vim.log.levels.TRACE)
 
   local possible = M.get_possible_files(current_path)
-  possible = vim.tbl_filter(function(path)
-    for _, pattern in ipairs(config.ignored_patterns) do
-      if glob_match(path, pattern) then
-        return false
-      end
-    end
-    return true
-  end, possible)
   utils.log("Suggestions: " .. vim.inspect(possible), vim.log.levels.DEBUG)
 
   if not vim.api.nvim_buf_is_valid(bufnr) then
@@ -69,7 +55,7 @@ function M.check(bufnr, current_path, from_autocmd)
       ),
       vim.log.levels.INFO
     )
-    edit_file(possible[1], bufnr)
+    utils.edit_file(possible[1], bufnr)
     return
   end
 
@@ -82,7 +68,7 @@ function M.check(bufnr, current_path, from_autocmd)
         end,
       }, function(item)
         if item ~= nil then
-          edit_file(item, bufnr)
+          utils.edit_file(item, bufnr)
         end
       end)
     end)

@@ -32,6 +32,8 @@
 
 ... and more to come! This plugin can be easily extensible to detect additional typos due to its design.
 
+https://user-images.githubusercontent.com/62098008/220934819-d3de6e00-9d48-41c4-8a5a-c450df435404.mp4
+
 ## 📦 Installation
 
 Install this plugin with your package manager of choice.

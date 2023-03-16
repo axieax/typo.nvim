@@ -38,7 +38,7 @@ function M.check(bufnr, current_path, from_autocmd)
   local possible = M.get_possible_files(current_path)
   utils.log("Suggestions: " .. vim.inspect(possible), vim.log.levels.DEBUG)
 
-  if not vim.api.nvim_buf_is_valid(bufnr) then
+  if not vim.api.nvim_buf_is_loaded(bufnr) then
     utils.log("Buffer is no longer valid", vim.log.levels.DEBUG)
   end
 

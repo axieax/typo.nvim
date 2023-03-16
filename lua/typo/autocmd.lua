@@ -31,33 +31,37 @@ function M.should_check(path, filetype)
 end
 
 -- NOTE: duplicate check for netrw hijack causing another BufWinEnter event
-local queue = {}
+local lock = {}
 
 --- Sets up the autocmd if configured to be enabled
 function M.setup_autocmd()
-  if config.autocmd.enabled then
-    vim.api.nvim_create_autocmd("BufWinEnter", {
-      pattern = config.autocmd.pattern,
-      group = vim.api.nvim_create_augroup("Typo", {}),
-      callback = function(opts)
-        if queue[opts.match] then
+  if not config.autocmd.enabled then
+    return
+  end
+  vim.api.nvim_create_autocmd("BufWinEnter", {
+    pattern = config.autocmd.pattern,
+    group = vim.api.nvim_create_augroup("Typo", {}),
+    callback = function(opts)
+      if lock[opts.match] then
+        return
+      end
+      lock[opts.match] = true
+      vim.schedule(function()
+        if not vim.api.nvim_buf_is_loaded(opts.buf) then
           return
         end
-        queue[opts.match] = true
-        vim.schedule(function()
-          local filetype = vim.api.nvim_buf_get_option(opts.buf, "filetype")
-          utils.log(
-            string.format("%s event triggered for %s (ft: %s)", opts.event, opts.match, filetype),
-            vim.log.levels.TRACE
-          )
-          if M.should_check(opts.match, filetype) then
-            require("typo").check(opts.buf, opts.match, true)
-          end
-          queue[opts.match] = nil
-        end)
-      end,
-    })
-  end
+        local filetype = vim.api.nvim_buf_get_option(opts.buf, "filetype")
+        utils.log(
+          string.format("%s event triggered for %s (ft: %s)", opts.event, opts.match, filetype),
+          vim.log.levels.TRACE
+        )
+        if M.should_check(opts.match, filetype) then
+          require("typo").check(opts.buf, opts.match, true)
+        end
+        lock[opts.match] = nil
+      end)
+    end,
+  })
 end
 
 return M

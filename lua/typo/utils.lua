@@ -43,7 +43,7 @@ end
 ---@param typo_bufnr number @bufnr of original buffer to delete
 function M.edit_file(filename, typo_bufnr)
   vim.api.nvim_cmd({ cmd = "edit", args = { filename } }, {})
-  if config.replace_buffer then
+  if config.replace_buffer and vim.api.nvim_buf_is_loaded(typo_bufnr) then
     vim.api.nvim_buf_delete(typo_bufnr, {})
   end
 end

@@ -14,31 +14,26 @@
 
 ✨ Typo.nvim is a plugin which addresses common typos when opening files in [Neovim](https://neovim.io), suggesting files you probably meant to load instead. This plugin can be configured to detect the following typos:
 
-1. **Accidentally creating a new file**
+&nbsp;&nbsp; 📝 **Accidentally creating a new file**
 
+- Enabled by default
 - Non-existent file `foo` was opened, but `foo.bar` exists.
-- Default: enabled
-- Examples:
-  * `package` opened instead of `package.json` or `package-lock.json`
-  * `index` opened instead of `index.js` or `index.test.js`
+  - `package` opened instead of `package.json` or `package-lock.json`
+  - `index` opened instead of `index.js` or `index.test.js`
 
-2. **Accidentally opening a directory instead of a file**
+&nbsp;&nbsp; 📁 **Accidentally opening a directory instead of a file**
 
+- Enabled by default
 - Directory `foo` was opened, but `foo.lua` exists.
-- Default: enabled
-- Examples:
-  * Lua module `plugin` directory opened instead of `plugin.lua` file
-  * `data` directory opened instead of `data_clean.py` file
-  * `.git` directory opened instead of `.github` directory
+  - Lua module `plugin` directory opened instead of `plugin.lua` file
+  - `.git` directory opened instead of `.github` directory
 
-3. **Check additional files**
+&nbsp;&nbsp; 🔎 **Check additional files**
 
-- Existent file `foo.bar` opened, but `foo.bar.baz` also exists
-- Default: disabled
-- Examples:
-  * `help.ts` opened instead of `help.tsx`
-  * `app.log` opened instead of its backup `app.log.20221023`
-  * `.zshrc` opened instead of its backup `.zshrc.bak`
+- Disabled by default
+- Existent file `foo.bar` opened, but `foo.bar.baz` also exists.
+  - `help.ts` opened instead of `help.tsx`
+  - `app.log` opened instead of its backup `app.log.20221023`
 
 ... and more to come! This plugin can be easily extensible to detect additional typos due to its design.
 

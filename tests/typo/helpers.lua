@@ -1,8 +1,20 @@
 local M = {}
 
 function M.create_dir(path)
-  path = path or "/tmp/typo.XXXXX"
-  return vim.loop.fs_mkdtemp(path)
+  if path then
+    local location, err = vim.loop.fs_mkdir(path, 511)
+    if err then
+      error("Could not create dir: " .. err)
+    end
+    return location
+  end
+
+  local tmp_dir = vim.loop.os_getenv("RUNNER_TEMP") or "/tmp"
+  local location, err = vim.loop.fs_mkdtemp(tmp_dir .. "/typo.XXXXXX")
+  if err then
+    error("Could not create dir: " .. err)
+  end
+  return location
 end
 
 function M.remove_dir(dir)

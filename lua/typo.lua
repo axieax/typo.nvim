@@ -16,9 +16,9 @@ function M.get_possible_files(path)
 
   -- extra glob pattern character "?" excludes original path from matches
   local possible = vim.fn.glob(escaped_path .. "?*", 0, 1)
-  return vim.tbl_filter(function(path)
+  return vim.tbl_filter(function(p)
     for _, pattern in ipairs(config.ignored_suggestions) do
-      if utils.glob_match(path, pattern) then
+      if utils.glob_match(p, pattern) then
         return false
       end
     end

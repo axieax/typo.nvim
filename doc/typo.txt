@@ -103,7 +103,7 @@ for all files except for one filetype.
 
 When {auto_select} is enabled, typo corrections can be automatically applied
 if a typo is detected and there is only one suggested correction. A useful
-example uses |urlview.config-ignored_suggestions| to ignore `package-lock.json` so
+example uses |typo.config-ignored_suggestions| to ignore `package-lock.json` so
 that when a user intends to open `package.json` but mistypes `package`, the
 intended file is automatically opened instead of the non-existent `package`
 file, bypassing prompts with a single suggestion of `package.json` (since

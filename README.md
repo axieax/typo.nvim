@@ -16,19 +16,29 @@
 
 1. **Accidentally creating a new file**
 
-- Non-existent file `foo` opened, but `foo.bar` exists.
+- Non-existent file `foo` was opened, but `foo.bar` exists.
 - Default: enabled
+- Examples:
+  * `package` opened instead of `package.json` or `package-lock.json`
+  * `index` opened instead of `index.js` or `index.test.js`
 
 2. **Accidentally opening a directory instead of a file**
 
 - Directory `foo` was opened, but `foo.lua` exists.
-- Sometimes opening lua modules structured like this can get a bit frustrating..
 - Default: enabled
+- Examples:
+  * Lua module `plugin` directory opened instead of `plugin.lua` file
+  * `data` directory opened instead of `data_clean.py` file
+  * `.git` directory opened instead of `.github` directory
 
 3. **Check additional files**
 
 - Existent file `foo.bar` opened, but `foo.bar.baz` also exists
 - Default: disabled
+- Examples:
+  * `help.ts` opened instead of `help.tsx`
+  * `app.log` opened instead of its backup `app.log.20221023`
+  * `.zshrc` opened instead of its backup `.zshrc.bak`
 
 ... and more to come! This plugin can be easily extensible to detect additional typos due to its design.
 
@@ -59,17 +69,17 @@ This plugin works out of the box, so no configuration is required unless you wan
   -- open the selected correct file in the current buffer
   replace_buffer = true,
   -- file patterns which shouldn't be suggested (e.g. "package-lock.json")
-  ignored_patterns = { "*.swp" },
+  ignored_suggestions = { "*.swp" },
   -- display logs with this severity or higher
   log_level = vim.log.levels.INFO,
   autocmd = {
     enabled = true,
     pattern = "*",
-    ignored_filetypes = { "TelescopePrompt", "neo-tree" },
+    ignored_filetypes = {},
     auto_select = false,
 
-    check_dir = true, -- dir `foo` opened but `foo.lua` exists
-    check_empty_file = true, -- non-existent file `foo` opened but `foo.bar` exists
+    check_new_file = true, -- non-existent file `foo` opened but `foo.bar` exists
+    check_directory = true, -- dir `foo` opened but `foo.lua` exists
     check_additional_files = false, -- file `foo` exists, but file `foo.bar` also exists
   },
 },

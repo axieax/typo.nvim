@@ -16,11 +16,11 @@ function M.should_check(path, filetype)
   local stat = vim.loop.fs_stat(path)
   utils.log(path .. ": " .. vim.inspect(stat), vim.log.levels.DEBUG)
   -- Use case 1: file does not exist
-  if config.autocmd.check_empty_file and stat == nil then
+  if config.autocmd.check_new_file and stat == nil then
     return true
   end
   -- Use case 2: directory exists
-  if config.autocmd.check_dir and stat and stat.type == "directory" then
+  if config.autocmd.check_directory and stat and stat.type == "directory" then
     return true
   end
   -- Use case 3: file exists

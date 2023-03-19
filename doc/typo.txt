@@ -1,0 +1,184 @@
+*typo.txt*                      Suggests files you probably meant to open instead
+
+================================================================================
+Table of Contents                                                *typo.contents*
+
+    INTRODUCTION .......................................... |typo|
+    CONFIGURATION ......................................... |typo.config|
+    API ................................................... |typo.api|
+
+
+================================================================================
+INTRODUCTION                                                              *typo*
+
+✨ typo.nvim is a plugin which addresses common typos when opening files in
+Neovim, suggesting files you probably meant to load instead. This plugin can
+be configured to detect the following typos:
+
+1. Accidentally creating a new file |typo.config-autocmd.check_new_file|
+2. Accidentally opening a directory instead of a file
+|typo.config-autocmd.check_directory|
+3. Meant to open another file with the current file as a prefix |typo.usage-3|
+
+
+================================================================================
+CONFIGURATION                                                      *typo.config*
+
+typo.nvim works out of the box, meaning the default config is automatically
+set up. However, the default options can be configured using the
+`require("typo").setup` function, with the configuration options below.
+
+                                                    *typo.config-replace_buffer*
+{replace_buffer}                                         boolean (default: true)
+
+Enable to open the selected file from the suggested corrections in the current
+buffer, rather than in another buffer.
+
+                                               *typo.config-ignored_suggestions*
+{ignored_suggestions}                        table (list) (default: { "*.swp" })
+
+File patterns which should not be suggested by typo.nvim. By default, vim swap
+files are excluded. See |typo.config-autocmd.auto_select| to see how this can
+be used to enhance the user experience, e.g. with ignoring `package-lock.json`.
+
+                                                         *typo.config-log_level*
+{log_level}    `vim.log.levels` enum or int (default: `vim.log.levels.INFO`)
+
+Displays logs from this plugin with a severity at this level or higher,
+suppressing logs with lower severity levels. >
+
+  vim.log.levels = {
+    TRACE = 0,
+    DEBUG = 1,
+    INFO = 2,
+    WARN = 3
+    ERROR = 4,
+    OFF = 5,  -- Neovim v0.8+
+  }
+<
+The default value of `vim.log.levels.INFO` means that INFO, WARN and ERROR
+logs will all be displayed. Similarly, a log_level_min value of
+`vim.log.levels.WARN` means that only WARN and ERROR logs will be displayed.
+It is recommended for this value to be at least `vim.log.levels.WARN` to
+ensure warnings are appropriately logged. Setting this value to
+`vim.log.levels.OFF` (requires Neovim 0.8+) or `5` will effectively suppress
+all logs.
+
+                                                           *typo.config-autocmd*
+{autocmd}                                                            table (map)
+
+Config settings related to the default |autocmd| used by typo.nvim. It has the
+following fields:
+
+- {enabled}                  see |typo.config-autocmd.enabled|
+- {kattern}                  see |typo.config-autocmd.pattern|
+- {ignored_filetypes}        see |typo.config-autocmd.ignored_filetypes|
+- {auto_select}              see |typo.config-autocmd.auto_select|
+- {check_new_file}           see |typo.config-autocmd.check_new_file|
+- {check_directory}          see |typo.config-autocmd.check_directory|
+- {check_additional_files}   see |typo.config-autocmd.check_additional_files|
+
+                                                   *typo.config-autocmd.enabled*
+{autocmd.enabled}                                        boolean (default: true)
+
+Enables the autocmd used by typo.nvim to be able to make the required typo
+checks when a file or directory is opened.
+
+                                                   *typo.config-autocmd.pattern*
+{autocmd.pattern}                           string | table (list) (default: "*")
+
+|autocmd-pattern| for the |BufWinEnter| autocmd used by typo.nvim. Can be used
+to impose a restriction on the types of files to activate this plugin on.
+
+                                         *typo.config-autocmd.ignored_filetypes*
+{autocmd.ignored_filetypes}                           table (list) (default: {})
+
+Filetypes to ignore activating the autocmd on. This can be useful in case
+other plugins have conflicts with this plugin, or because it is difficult to
+specify specific exclusion with |typo.config-autocmd.pattern|, e.g. activate
+for all files except for one filetype.
+
+                                               *typo.config-autocmd.auto_select*
+{autocmd.auto_select}                                   boolean (default: false)
+
+When {auto_select} is enabled, typo corrections can be automatically applied
+if a typo is detected and there is only one suggested correction. A useful
+example uses |urlview.config-ignored_suggestions| to ignore `package-lock.json` so
+that when a user intends to open `package.json` but mistypes `package`, the
+intended file is automatically opened instead of the non-existent `package`
+file, bypassing prompts with a single suggestion of `package.json` (since
+`package-lock.json` is an ignored suggestion).
+
+                                            *typo.config-autocmd.check_new_file*
+{autocmd.check_new_file}                                 boolean (default: true)
+
+When enabled, typos will be suggested when a non-existent file is opened with
+Neovim (in other words, a new file is created), and there exists other files
+which have the opened file's name as a prefix for their filenames.
+
+Pattern: non-existent file `foo` opened, but file / directory `foo.bar` exists.
+
+Examples:
+- New file `package` opened instead of `package.json` or `package-lock.json`
+- New file `index` opened instead of `index.js` or `index.test.js`
+
+                                           *typo.config-autocmd.check_directory*
+{autocmd.check_directory}                                boolean (default: true)
+
+When enabled, typos will be suggested when the user opens a directory with
+Neovim, and there exists other files or directories which have the opened
+directory's name as a prefix for their names. By design, this should also work
+with plugins that hijack directory buffers, such as the built-in `netrw` or file
+manager plugins. The expected behavior is for the `vim.ui.input` prompt to be
+displayed after the hijack has occured. Please raise a GitHub issue with any
+conflicting plugins if errors occur.
+
+Pattern: directory `foo` opened, but file / directory `foo.bar` exists.
+
+Examples:
+- Lua module `plugin` directory opened instead of `plugin.lua` file
+  - Justification: some Lua modules are structured using `plugin/` and
+  `plugin.lua`, instead of `plugin/` and `plugin/init.lua`, causing this typo to
+  occur - accidentally opening the directory instead of the intended lua file
+- Directory `data` opened instead of the file `data_clean.py`
+- Directory `.git` opened instead of the directory `.github`
+
+                                    *typo.config-autocmd.check_additional_files*
+{autocmd.check_additional_files}                        boolean (default: false)
+
+When enabled, typos will be suggested even if a valid file is opened with
+Neovim but there exists other files or directories which have the opened
+file's name as a prefix for their names.
+
+Pattern: file `foo.bar` opened, but file / directory `foo.bar.baz` exists.
+
+Examples:
+- File `help.ts` opened instead of `help.tsx`
+- Meant to open backup files instead, e.g.
+  - File `app.log` opened instead of `app.log.20221023`
+  - File `config.ini` opened instead of `config.ini.bak`
+  - File `.zshrc` opened instead of `.zshrc.bak`
+
+
+================================================================================
+API                                                                   *typo.api*
+
+This plugin exposes a public API for manually run a typo check on the current
+buffer with `require("typo").check()`. This ignores any checks defined in
+|typo.config-autocmd|.
+
+For the user's convenience, this can be assigned a keymap with >
+
+  vim.keymap.set("n", "\\<Tab>", function()
+    require("typo").check()
+  end, { desc = "Typo check" })
+<
+or assigned to a custom command with >
+
+  vim.api.nvim_create_user_command("Typo", function()
+    require("typo").check()
+  end)
+<
+
+
+ vim:tw=78:ts=8:noet:ft=help:norl:

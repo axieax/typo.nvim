@@ -80,9 +80,21 @@ This plugin works out of the box, so no configuration is required unless you wan
 },
 ```
 
+## 🎨 UI Customization
+
+You can customize the appearance of `vim.ui.select` for displaying the suggested files with plugins such as [dressing.nvim](https://github.com/stevearc/dressing.nvim). The demo above uses the Telescope picker from dressing.nvim, which allows me to easily filter and fuzzy search through the suggested files.
+
 ## 🗺️ Mappings
 
-This plugin exposes a public API for manually run a typo check on the current buffer. You can set a keymap for this with `vim.keymap.set`, for example:
+This plugin exposes a public API for manually run a typo check on the current buffer. You can create a Neovim command for this with:
+
+```lua
+vim.api.nvim_create_user_command("Typo", function()
+  require("typo").check()
+end)
+```
+
+Alternatively, you can also set a keymap for this with:
 
 ```lua
 vim.keymap.set("n", "\\<Tab>", function()

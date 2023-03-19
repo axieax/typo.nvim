@@ -56,6 +56,37 @@ describe("captures new files", function()
     helpers.remove_dir(dir)
   end)
 
+  it("suggests files from parent directory", function()
+    local base_dir = helpers.create_dir()
+    local nested_dir = base_dir .. "/foo_dir"
+    helpers.create_dir(nested_dir)
+
+    local files = { "foo.bar", "foo.bar.baz", "foo.foo", "foo.txt", "fool" }
+    local expected = helpers.files_from_dir(base_dir, files)
+    table.insert(expected, nested_dir)
+    helpers.create_files(base_dir, files)
+
+    local suggestions = typo.get_possible_files(base_dir .. "/foo")
+    assert_tbl_same_any_order(expected, suggestions)
+
+    helpers.remove_dir(base_dir)
+  end)
+
+  it("suggests files from nested directory", function()
+    local base_dir = helpers.create_dir()
+    local nested_dir = base_dir .. "/nested"
+    helpers.create_dir(nested_dir)
+
+    local files = { "foo.bar", "foo.bar.baz", "foo.foo", "foo.txt", "fool" }
+    local expected = helpers.files_from_dir(nested_dir, files)
+    helpers.create_files(nested_dir, files)
+
+    local suggestions = typo.get_possible_files(nested_dir .. "/foo")
+    assert_tbl_same_any_order(expected, suggestions)
+
+    helpers.remove_dir(base_dir)
+  end)
+
   it("corrects package", function()
     local dir = helpers.create_dir()
     local files = { "package.json", "package-lock.json" }

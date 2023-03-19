@@ -43,14 +43,11 @@ type = "any"
 type = "any"
 required = false
 
-[[assert.same.args]]
-type = "any"
+[assert.same]
+any = true
 
-[[assert.same.args]]
-type = "any"
-
-[[assert.truthy.args]]
-type = "any"
+[assert.truthy]
+any = true
 
 [[assert.falsy.args]]
 type = "any"

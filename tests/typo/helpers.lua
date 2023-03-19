@@ -36,9 +36,9 @@ function M.files_from_dir(dir, files)
 end
 
 function M.assert_tbl_same_any_order(expected, actual)
-  assert.same(#expected, #actual)
+  assert.same(#expected, #actual, "Expected " .. #expected .. " items, got " .. #actual)
   for _, e in ipairs(expected) do
-    assert.truthy(vim.tbl_contains(actual, e))
+    assert.truthy(vim.tbl_contains(actual, e), "Expected " .. e .. " to be in " .. vim.inspect(actual))
   end
 end
 

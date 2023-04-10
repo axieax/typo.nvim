@@ -45,7 +45,7 @@ be used to enhance the user experience, e.g. with ignoring `package-lock.json`.
 {log_level}    `vim.log.levels` enum or int (default: `vim.log.levels.INFO`)
 
 Displays logs from this plugin with a severity at this level or higher,
-suppressing logs with lower severity levels. >
+suppressing logs with lower severity levels. >lua
 
   vim.log.levels = {
     TRACE = 0,
@@ -167,13 +167,13 @@ This plugin exposes a public API for manually run a typo check on the current
 buffer with `require("typo").check()`. This ignores any checks defined in
 |typo.config-autocmd|.
 
-For the user's convenience, this can be assigned a keymap with >
+For the user's convenience, this can be assigned a keymap with >lua
 
   vim.keymap.set("n", "\\<Tab>", function()
     require("typo").check()
   end, { desc = "Typo check" })
 <
-or assigned to a custom command with >
+or assigned to a custom command with >lua
 
   vim.api.nvim_create_user_command("Typo", function()
     require("typo").check()
